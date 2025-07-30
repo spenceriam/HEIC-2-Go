@@ -2,62 +2,62 @@
 
 ## Project Setup
 - [x] Initialize git repository
-- [ ] Create project structure
-  - [ ] cmd/heic2go/main.go
-  - [ ] internal/app/
-  - [ ] internal/converter/
-  - [ ] internal/ui/
-  - [ ] internal/config/
-  - [ ] pkg/version/
-  - [ ] scripts/
+- [x] Create project structure
+  - [x] cmd/heic2go/main.go
+  - [x] internal/app/
+  - [x] internal/converter/
+  - [x] internal/ui/
+  - [x] internal/errors/
+  - [x] pkg/version/
+  - [x] scripts/
   - [ ] test/
-- [ ] Set up Go module
-- [ ] Add required dependencies to go.mod
+- [x] Set up Go module
+- [x] Add required dependencies to go.mod
 
 ## Core Functionality
-- [ ] Implement HEIC to JPG conversion
-  - [ ] Basic file conversion
-  - [ ] Metadata preservation (EXIF, GPS, etc.)
-  - [ ] Quality preservation
-  - [ ] Error handling
+- [x] Implement HEIC to JPG conversion
+  - [x] Basic file conversion
+  - [x] Metadata preservation (EXIF, GPS, etc.)
+  - [x] Quality preservation
+  - [x] Error handling
 
 ## User Interface
-- [ ] ASCII Art Interface
+- [x] ASCII Art Interface
   - [x] Welcome screen
-  - [ ] Main menu
-  - [ ] File selection screen
-  - [ ] Processing screen
-  - [ ] Success/Error screens
-  - [ ] Settings menu
+  - [x] Main menu
+  - [x] File selection screen
+  - [x] Processing screen with progress bar
+  - [x] Success/Error screens
+  - [x] Settings menu
 
 ## File Operations
-- [ ] Single file processing
-  - [ ] File path input
-  - [ ] File validation
-  - [ ] Output file naming
-  - [ ] Conflict resolution
-- [ ] Batch directory processing
-  - [ ] Directory scanning
-  - [ ] Progress tracking
-  - [ ] Batch conflict resolution
-  - [ ] Summary reporting
+- [x] Single file processing
+  - [x] File path input
+  - [x] File validation
+  - [x] Output file naming
+  - [x] Conflict resolution (overwrite/rename/skip)
+- [x] Batch directory processing
+  - [x] Directory scanning
+  - [x] Progress tracking
+  - [x] Batch conflict resolution
+  - [x] Summary reporting
 
 ## System Integration
-- [ ] Admin permissions
-  - [ ] Windows UAC handling
-  - [ ] macOS sudo handling
-  - [ ] Linux sudo handling
-- [ ] File operations
-  - [ ] Cross-platform file handling
-  - [ ] File permissions
-  - [ ] Temporary file management
+- [x] Admin permissions
+  - [x] Windows UAC handling
+  - [x] macOS sudo handling
+  - [x] Linux sudo handling
+- [x] File operations
+  - [x] Cross-platform file handling
+  - [x] File permissions
+  - [x] Temporary file management
 
 ## Settings & Configuration
-- [ ] User preferences
-  - [ ] Default output directory
-  - [ ] JPG quality settings
-  - [ ] Color theme selection
-  - [ ] Configuration persistence
+- [x] User preferences
+  - [x] Default output directory
+  - [x] JPG quality settings
+  - [x] Color theme selection
+  - [x] Configuration persistence
 
 ## Testing
 - [ ] Unit tests
@@ -66,24 +66,37 @@
 - [ ] Test data preparation
 
 ## Build & Distribution
-- [ ] Cross-compilation scripts
-- [ ] Version management
-- [ ] Release packaging
+- [x] Cross-compilation scripts
+  - [x] Windows build script
+  - [x] Linux/macOS build script
+  - [x] Multi-architecture support
+- [x] Version management
+- [x] Release packaging
 - [ ] Installation scripts
 
 ## Documentation
-- [ ] README.md
+- [x] README.md (basic)
 - [ ] User guide
 - [ ] Developer documentation
 - [ ] Command-line help
 
 ## Current Status
-- Initial project setup in progress
-- Git repository initialized
-- PRD and user flow documents reviewed
-- Todo list created
+- Core functionality implemented
+- Cross-platform support added
+- Basic error handling in place
+- Ready for testing and documentation
 
 ## Next Steps
-1. Set up Go module and project structure
-2. Implement basic file conversion functionality
-3. Create initial UI components
+1. Write unit tests for core functionality
+2. Create comprehensive test data
+3. Document usage and API
+4. Prepare for initial release
+
+## Testing Instructions
+1. Clone the repository
+2. Run `go mod download` to install dependencies
+3. Build the application using the appropriate build script:
+   - Windows: `scripts\build.ps1`
+   - Linux/macOS: `chmod +x scripts/build.sh && ./scripts/build.sh`
+4. Test the application with sample HEIC files
+5. Verify metadata preservation in output JPG files
