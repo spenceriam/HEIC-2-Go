@@ -9,6 +9,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/rwcarlsen/goexif/exif"
+	"github.com/spenceriam/HEIC-2-Go/internal/errors"
 	heif "github.com/strukturag/libheif/go/heif"
 )
 
@@ -28,24 +29,24 @@ func NewHEICConverter(preserveMetadata bool) *HEICConverter {
 func (c *HEICConverter) Convert(inputPath, outputPath string) error {
 	// Validate input file
 	if _, err := os.Stat(inputPath); os.IsNotExist(err) {
-		return fmt.Errorf("input file does not exist: %s", inputPath)
+		return errors.FileNotFound(inputPath)
 	}
 
 	// Ensure output directory exists
 	outputDir := filepath.Dir(outputPath)
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
-		return fmt.Errorf("failed to create output directory: %w", err)
+		return errors.Wrap(err, errors.ErrDirCreate, "failed to create output directory")
 	}
 
 	// Read HEIC file
 	img, metadata, err := c.decodeHEIC(inputPath)
 	if err != nil {
-		return fmt.Errorf("failed to decode HEIC file: %w", err)
+		return errors.Wrap(err, errors.ErrDecodeFailed, "failed to decode HEIC file")
 	}
 
 	// Save as JPG
 	if err := imaging.Save(img, outputPath, imaging.JPEGQuality(90)); err != nil {
-		return fmt.Errorf("failed to save JPG file: %w", err)
+		return errors.Wrap(err, errors.ErrEncodeFailed, "failed to save JPG file")
 	}
 
 	// Preserve metadata if requested
@@ -53,7 +54,7 @@ func (c *HEICConverter) Convert(inputPath, outputPath string) error {
 		if err := c.writeMetadata(outputPath, metadata); err != nil {
 			// Don't fail the entire conversion if metadata can't be written
 			// Just log the error and continue
-			fmt.Printf("Warning: Failed to write metadata: %v\n", err)
+			return errors.Wrap(err, errors.ErrMetadataPreservation, "warning: failed to write metadata")
 		}
 	}
 
@@ -65,38 +66,38 @@ func (c *HEICConverter) decodeHEIC(path string) (image.Image, *exif.Exif, error)
 	// Open the HEIC file
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.HandleFileError(err, path)
 	}
 	defer file.Close()
 
 	// Get file info for size
 	fileInfo, err := file.Stat()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, errors.ErrFileRead, "failed to get file info")
 	}
 
 	// Read the entire file into memory
 	data := make([]byte, fileInfo.Size())
 	if _, err := file.Read(data); err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, errors.ErrFileRead, "failed to read file data")
 	}
 
 	// Create HEIF context
 	ctx := heif.NewContext()
 	if err := ctx.ReadFromMemory(data); err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, errors.ErrDecodeFailed, "failed to read HEIC data")
 	}
 
 	// Get the primary image
 	handle, err := ctx.GetPrimaryImageHandle()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, errors.ErrInvalidImage, "invalid or corrupted HEIC file")
 	}
 
 	// Decode the image
 	img, err := handle.DecodeImage(heif.ColorspaceUndefined, heif.ChromaUndefined, nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, errors.ErrDecodeFailed, "failed to decode HEIC image")
 	}
 
 	// Extract metadata if needed

@@ -135,30 +135,47 @@ File path: `
 	}
 }
 
-// ShowProcessingScreen displays the file processing screen
+// ShowProcessingScreen displays the file processing screen with progress updates
 func (f *FileInputScreen) ShowProcessingScreen(filePath string) (string, error) {
-	// Extract the file name for display
-	fileName := filepath.Base(filePath)
-
 	// Generate output path (same directory, change extension to .jpg)
 	outputPath := strings.TrimSuffix(filePath, filepath.Ext(filePath)) + ".jpg"
 
-	// Display processing screen
-	f.screen.Clear()
-	f.screen.DisplayWelcome()
+	// Create channels for progress updates
+	progressChan := make(chan int)
+	doneChan := make(chan bool)
+	errorChan := make(chan error)
 
-	// Show processing message
-	fmt.Printf("\nProcessing file: %s\n\n", fileName)
-	fmt.Println("╔══════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                         Processing File                            ║")
-	fmt.Println("╚══════════════════════════════════════════════════════════════════════╝")
-	fmt.Println()
+	// Start the conversion in a goroutine
+	go func() {
+		// Create a converter instance
+		converter := converter.NewHEICConverter(true) // Preserve metadata
 
-	// Show progress bar placeholder
-	progressBar := "[                                                  ] 0%"
-	fmt.Println(progressBar)
+		// Create a progress reporter
+		go func() {
+			// Simulate progress updates
+			for i := 0; i <= 100; i += 5 {
+				progressChan <- i
+				time.Sleep(100 * time.Millisecond)
+			}
+			close(progressChan)
 
-	// Return the output path where the file will be saved
+			// Perform the actual conversion
+			if err := converter.Convert(filePath, outputPath); err != nil {
+				errorChan <- err
+				return
+			}
+
+			// Signal completion
+			doneChan <- true
+		}()
+	}()
+
+	// Show the progress screen and wait for completion
+	if err := f.ShowProgressScreen(filePath, progressChan, doneChan, errorChan); err != nil {
+		return "", err
+	}
+
+	// Return the output path where the file was saved
 	return outputPath, nil
 }
 
