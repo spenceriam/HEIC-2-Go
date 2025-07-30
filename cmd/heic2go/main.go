@@ -3,16 +3,22 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/spenceriam/HEIC-2-Go/internal/ui"
+	"github.com/spenceriam/HEIC-2-Go/pkg/version"
 )
 
 const (
-	appName    = "HEIC-2-Go"
-	appVersion = "0.1.0"
+	appName = "HEIC-2-Go"
 )
 
 func main() {
-	fmt.Printf("%s v%s\n", appName, appVersion)
-	fmt.Println("A tool to convert HEIC images to JPG format")
-	fmt.Println("\nThis is a work in progress. Check back soon for updates!")
-	os.Exit(0)
+	// Initialize the terminal UI
+	screen := ui.NewScreen()
+
+	// Start the main menu
+	if err := screen.ShowMenu(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
 }
