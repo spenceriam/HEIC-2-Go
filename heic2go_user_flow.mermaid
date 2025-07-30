@@ -1,0 +1,136 @@
+flowchart TD
+    A[Launch HEIC-2-Go] --> B[Display ASCII Welcome Screen]
+    B --> C{Main Menu Selection}
+    
+    %% Main Menu Options
+    C -->|1| D[Convert Single File]
+    C -->|2| E[Convert Directory]
+    C -->|3| F[Settings Menu]
+    C -->|4| G[Exit Application]
+    
+    %% Single File Conversion Flow
+    D --> H[Display File Input Screen]
+    H --> I{File Input Method}
+    I -->|Path/Drag-Drop| J[Validate File Path]
+    I -->|Browse| K[Open File Picker]
+    K --> J
+    J --> L{Is Valid HEIC?}
+    L -->|No| M[Show Error Message]
+    M --> H
+    L -->|Yes| N[Check Admin Permissions]
+    N --> O{Permissions OK?}
+    O -->|No| P[Request Admin Rights]
+    P --> Q{Permission Granted?}
+    Q -->|No| R[Show Permission Error]
+    R --> C
+    Q -->|Yes| S[Start Conversion]
+    O -->|Yes| S
+    S --> T[Display Processing Screen]
+    T --> U[Convert HEIC to JPG]
+    U --> V[Preserve Metadata]
+    V --> W{Output File Exists?}
+    W -->|Yes| X[Show Conflict Resolution]
+    W -->|No| Y[Save Converted File]
+    
+    %% File Conflict Resolution
+    X --> Z{User Choice}
+    Z -->|1 - Overwrite| AA[Replace Existing File]
+    Z -->|2 - Rename| BB[Generate New Filename]
+    Z -->|3 - Skip| CC[Skip This File]
+    AA --> Y
+    BB --> Y
+    CC --> DD[Show Skip Message]
+    
+    %% Conversion Completion
+    Y --> EE[Display Success Screen]
+    DD --> EE
+    EE --> FF{Continue or Exit?}
+    FF -->|Continue| C
+    FF -->|Exit| G
+    
+    %% Directory Conversion Flow
+    E --> GG[Display Directory Input Screen]
+    GG --> HH{Directory Input}
+    HH -->|Path| II[Validate Directory]
+    HH -->|Browse| JJ[Open Directory Picker]
+    JJ --> II
+    II --> KK{Is Valid Directory?}
+    KK -->|No| LL[Show Directory Error]
+    LL --> GG
+    KK -->|Yes| MM[Scan for HEIC Files]
+    MM --> NN{Files Found?}
+    NN -->|No| OO[Show No Files Message]
+    OO --> C
+    NN -->|Yes| PP[Display File Count Summary]
+    PP --> QQ[Check Admin Permissions]
+    QQ --> RR{Permissions OK?}
+    RR -->|No| SS[Request Admin Rights]
+    SS --> TT{Permission Granted?}
+    TT -->|No| UU[Show Permission Error]
+    UU --> C
+    TT -->|Yes| VV[Start Batch Processing]
+    RR -->|Yes| VV
+    
+    %% Batch Processing Loop
+    VV --> WW[Display Batch Progress Screen]
+    WW --> XX[Process Next File]
+    XX --> YY[Convert Current File]
+    YY --> ZZ[Update Progress Bar]
+    ZZ --> AAA{File Conflict?}
+    AAA -->|Yes| BBB[Handle Conflict Resolution]
+    BBB --> CCC{User Choice}
+    CCC -->|Overwrite| DDD[Replace File]
+    CCC -->|Rename| EEE[Generate New Name]
+    CCC -->|Skip| FFF[Skip File]
+    CCC -->|Apply to All| GGG[Set Batch Rule]
+    DDD --> HHH[Save File]
+    EEE --> HHH
+    FFF --> III[Mark as Skipped]
+    GGG --> HHH
+    AAA -->|No| HHH
+    HHH --> JJJ[Update Statistics]
+    III --> JJJ
+    JJJ --> KKK{More Files?}
+    KKK -->|Yes| XX
+    KKK -->|No| LLL[Display Batch Complete]
+    LLL --> MMM{Continue or Exit?}
+    MMM -->|Continue| C
+    MMM -->|Exit| G
+    
+    %% Settings Flow
+    F --> NNN[Display Settings Screen]
+    NNN --> OOO{Setting Choice}
+    OOO -->|Quality| PPP[Adjust JPG Quality]
+    OOO -->|Output Dir| QQQ[Set Default Output Directory]
+    OOO -->|Theme| RRR[Change Color Theme]
+    OOO -->|Back| C
+    PPP --> SSS[Save Quality Setting]
+    QQQ --> TTT[Save Directory Setting]
+    RRR --> UUU[Apply New Theme]
+    SSS --> NNN
+    TTT --> NNN
+    UUU --> NNN
+    
+    %% Error Handling States
+    R --> VVV[Display Error Details]
+    VVV --> WWW{Retry or Exit?}
+    WWW -->|Retry| N
+    WWW -->|Exit| C
+    
+    %% Terminal States
+    G --> XXX[Show Exit Message]
+    XXX --> YYY[Clean Exit]
+    
+    %% Style Classes
+    classDef startEnd fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000
+    classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,color:#000
+    
+    %% Apply Styles
+    class A,G,XXX,YYY startEnd
+    class B,H,T,EE,WW,LLL,NNN process
+    class C,I,L,O,Q,W,Z,FF,KK,NN,RR,TT,AAA,CCC,KKK,MMM,OOO,WWW decision
+    class M,R,LL,UU,VVV error
+    class Y,AA,BB,HHH,SSS,TTT,UUU success
